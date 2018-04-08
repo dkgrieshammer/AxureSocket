@@ -1,0 +1,57 @@
+{
+  "name": "electron-Axureserver",
+  "version": "1.0.0",
+  "description": "A minimal Electron application to handle socket events for Axure prototyping",
+  "main": "main.js",
+  "files": [
+    "static/*"
+  ],
+  "scripts": {
+    "postinstall": "install-app-deps",
+    "start": "electron .",
+    "pack": "build --dir",
+    "dist": "build",
+    "build:win":"build --win dir"
+  },
+  "repository": "https://github.com/electron/electron-quick-start",
+  "keywords": [
+    "Electron",
+    "Axure",
+    "Socket"
+  ],
+  "author": "David Grieshammer <d.grieshammer@universal-interaction.com>",
+  "license": "CC0-1.0",
+  "build": {
+    "appId": "de.dkgrieshammer.axuresocket",
+    "asar":true,
+    "dmg": {
+      "contents": [
+        {
+          "x": 110,
+          "y": 150
+        },
+        {
+          "x": 240,
+          "y": 150,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "build/icon.ico"
+    }
+  },
+  "devDependencies": {
+    "electron": "^1.8.4",
+    "electron-builder": "^20.8.1"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "electron-reload": "^1.2.2",
+    "express": "^4.16.3",
+    "npm": "^5.8.0",
+    "socket.io": "^2.1.0"
+  }
+}
