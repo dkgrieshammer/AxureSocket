@@ -9,13 +9,10 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const PORT = process.env.PORT || 3000;
 const app = express()
-
 // log version numbers
 console.log("Node Version: " + process.versions.node)
 console.log("Chrome Version: " + process.versions.chrome)
 console.log("Electron Version: " + process.versions.electron)
-
-
 //Get Local Current IP Adress | Windows & Mac Version
 var ifaces = os.networkInterfaces();
 var ipAddress;
@@ -26,19 +23,8 @@ for (var element in ifaces) {
         }
     });
 }
-// if(ifaces.en0) {
-//     ifaces.en0.forEach(element => {
-//         if(element.family == "IPv4") {
-//             ipAddress = element.address;
-//         }
-//     });
-// } else {
-//     ipAddress == "Error"
-// }
-
 
 // Start Server
-
 var server = app.listen(PORT, () => console.log('Example app listening on port ' + PORT +'!'))
 app.use(bodyParser.urlencoded({ extended: true }));
 // Static Content Delivery
@@ -69,10 +55,64 @@ io.on('connection', function(socket){
       });
 });
 
-io.on('message', function(data) {
-    console.log("TEST");
-    console.log(data);
-});
+// GET DOM ELEMENTS
+var eventList = document.getElementById("dkgEventList");
+var messageCounter = document.getElementById("message-counter");
+var triggerList = document.getElementById("dkgTriggerList");
+var deleteTriggerBtns = document.getElementsByClassName("delete-btn");
+var fireTriggerBtns = document.getElementsByClassName("fire-btn");
+
+// ADD EVENTS
+// for(element of deleteTriggerBtns) {
+//     element.addEventListener('click', function(e) {
+//         var tmp = e.target.parentElement.parentElement;
+//         triggerList.removeChild(tmp);
+//     });
+// }
+
+var triggerElements = triggerList.getElementsByClassName("form-row");
+
+// for(var element of triggerElements) {
+//     console.log(element)
+//     var delBtn = element.getElementsByClassName("delete-btn")[0];
+//     var fireBtn = element.getElementsByClassName("fire-btn")[0];
+//     // var inField = element.getElementsByClassName("triggerName")[0];
+
+//     delBtn.addEventListener('click', function(e) {
+//         var tmp = e.target.parentElement.parentElement;
+//         triggerList.removeChild(tmp);
+//     });
+
+//     fireBtn.addEventListener('click', function(e) {
+//         // io.emit();
+//         console.log(e.target.parentElement.parentElement);
+//         // var eventText = element.getElementsByClassName("triggerName")[0].value;
+//         var inField = element.getElementsByClassName("triggerName")[0];
+//         console.log(inField.value);
+//     });
+// }
+
+for(var i = 0; i < triggerElements.length; i ++) {
+    var element = triggerElements[i];
+    console.log(element)
+    var delBtn = element.getElementsByClassName("delete-btn")[0];
+    var fireBtn = element.getElementsByClassName("fire-btn")[0];
+    var inField = element.getElementsByClassName("triggerName")[0];
+
+    delBtn.addEventListener('click', function(e) {
+        var tmp = e.target.parentElement.parentElement;
+        triggerList.removeChild(tmp);
+    });
+
+    fireBtn.addEventListener('click', function(e) {
+        // io.emit();
+        var inField = e.target.parentElement.parentElement.getElementsByClassName("triggerName")[0].value;
+        // io.emit('signal', {"signal":"RemoteControl", "message":inField});
+        io.emit(inField, {"test":"RemoteControl", "message":inField});
+        addEventTolist("RemoteControl", inField);
+    });
+}
+
 
 // Express Server for direct http requests - we actually dont need that right?
 app.get('/', (req, res) => {
@@ -85,11 +125,12 @@ app.post("/", (req,res,next) => {
 
     if (req.body.message) { var message = req.body.message; }
     else { var message = null; }
-    console.log(req.body);
 
     if (req.body.signal) {
-        var change = {"signal": req.body.signal, "message": message};
-        io.emit('signal', change);
+        var change = {"signal ": req.body.signal, "message ": message};
+        addEventTolist(req.body.signal, message);
+        // io.emit('signal', change);
+        io.emit(req.body.signal, {"message":message});
         console.log(" Signal \x1b[36m" + req.body.signal +" (HTTP POST)\x1b[0m received with message: \x1b[36m" + message + "\x1b[0m");
         res.json(change);
     }
@@ -99,6 +140,17 @@ app.post("/", (req,res,next) => {
     }
 
 });
+
+function addEventTolist(e, m) {
+    var eventText = "signal: " + e + " message: " + m;
+    var tl = document.createElement('li');
+    tl.setAttribute('class', 'list-group-item');
+    tl.textContent = eventText;
+    eventList.appendChild(tl);
+    var tmpCounter = messageCounter.innerText;
+    tmpCounter ++;
+    messageCounter.innerText = tmpCounter;
+}
 
 // Write IP Address in Window
 var devBtn = document.createElement('div')
