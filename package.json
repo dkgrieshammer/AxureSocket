@@ -11,7 +11,7 @@
     "start": "electron .",
     "pack": "build --dir",
     "dist": "build",
-    "build:win":"build --win dir"
+    "build:win": "build --win dir"
   },
   "repository": "https://github.com/electron/electron-quick-start",
   "keywords": [
@@ -23,7 +23,7 @@
   "license": "CC0-1.0",
   "build": {
     "appId": "de.dkgrieshammer.axuresocket",
-    "asar":true,
+    "asar": true,
     "dmg": {
       "contents": [
         {
@@ -44,14 +44,15 @@
     }
   },
   "devDependencies": {
-    "electron": "^1.8.4",
-    "electron-builder": "^20.8.1"
+    "electron": "^1.8.8",
+    "electron-builder": "^20.39.0",
+    "electron-reload": "^1.4.0"
   },
   "dependencies": {
     "body-parser": "^1.18.2",
-    "electron-reload": "^1.2.2",
     "express": "^4.16.3",
-    "npm": "^5.8.0",
+    "express-handlebars": "^3.0.0",
+    "npm": "^6.9.0",
     "socket.io": "^2.1.0"
   }
 }

@@ -23,14 +23,14 @@ for (var element in ifaces) {
         }
     });
 }
+// app.set('view engine', 'handlebars') //handlebar templates - oldschool ftw
 
 // Start Server
-var server = app.listen(PORT, () => console.log('Example app listening on port ' + PORT +'!'))
+var server = app.listen(PORT, () => console.log('AxureSocket running on ' + PORT +'!'))
 app.use(bodyParser.urlencoded({ extended: true }));
 // Static Content Delivery
 var publicPath = path.resolve(__dirname, 'static');
 console.log(publicPath);
-// app.use( express.static(publicPath) ); 
 app.use( express.static(publicPath) ); 
 
 // start Socket Server
@@ -59,59 +59,59 @@ io.on('connection', function(socket){
 var eventList = document.getElementById("dkgEventList");
 var messageCounter = document.getElementById("message-counter");
 var triggerList = document.getElementById("dkgTriggerList");
+var addTriggerBtn = document.getElementById('addTrigger');
 var deleteTriggerBtns = document.getElementsByClassName("delete-btn");
 var fireTriggerBtns = document.getElementsByClassName("fire-btn");
-
-// ADD EVENTS
-// for(element of deleteTriggerBtns) {
-//     element.addEventListener('click', function(e) {
-//         var tmp = e.target.parentElement.parentElement;
-//         triggerList.removeChild(tmp);
-//     });
-// }
-
 var triggerElements = triggerList.getElementsByClassName("form-row");
+let eventTemplate = document.querySelector('#eventTemplate')
+let templateContent = eventTemplate.content.querySelector('div')
+let clearEventsBtn = document.querySelector('#clearListBtn')
 
-// for(var element of triggerElements) {
-//     console.log(element)
-//     var delBtn = element.getElementsByClassName("delete-btn")[0];
-//     var fireBtn = element.getElementsByClassName("fire-btn")[0];
-//     // var inField = element.getElementsByClassName("triggerName")[0];
 
-//     delBtn.addEventListener('click', function(e) {
-//         var tmp = e.target.parentElement.parentElement;
-//         triggerList.removeChild(tmp);
-//     });
+addTriggerBtn.addEventListener('click', function(e){
+    let _newEventName = document.getElementById('triggerName').value
+    templateContent.getElementsByClassName('triggerName')[0].value = _newEventName
+    
+    let _eventTemplate = document.getElementById('eventTemplate').cloneNode(true)
+    let _templateContent = _eventTemplate.content.querySelector('div')
+    addDeleteEvent(_templateContent.getElementsByClassName("delete-btn")[0], _templateContent)
+    addFireEvent(_templateContent.getElementsByClassName("fire-btn")[0], _templateContent)
+    triggerList.prepend(_templateContent);
+});
 
-//     fireBtn.addEventListener('click', function(e) {
-//         // io.emit();
-//         console.log(e.target.parentElement.parentElement);
-//         // var eventText = element.getElementsByClassName("triggerName")[0].value;
-//         var inField = element.getElementsByClassName("triggerName")[0];
-//         console.log(inField.value);
-//     });
-// }
+clearEventsBtn.addEventListener('click', function(e) {
+    let listElements = document.querySelectorAll('#dkgEventList li')
+    listElements.forEach(function(el) {
+        el.remove()
+    })
+    console.log(listElements);
+    
+})
 
-for(var i = 0; i < triggerElements.length; i ++) {
-    var element = triggerElements[i];
-    console.log(element)
-    var delBtn = element.getElementsByClassName("delete-btn")[0];
-    var fireBtn = element.getElementsByClassName("fire-btn")[0];
-    var inField = element.getElementsByClassName("triggerName")[0];
-
-    delBtn.addEventListener('click', function(e) {
-        var tmp = e.target.parentElement.parentElement;
-        triggerList.removeChild(tmp);
-    });
-
-    fireBtn.addEventListener('click', function(e) {
-        // io.emit();
-        var inField = e.target.parentElement.parentElement.getElementsByClassName("triggerName")[0].value;
-        // io.emit('signal', {"signal":"RemoteControl", "message":inField});
-        io.emit(inField, {"test":"RemoteControl", "message":inField});
-        addEventTolist("RemoteControl", inField);
-    });
+for(let i = 0; i < triggerElements.length; i ++) {
+    let element = triggerElements[i];
+    let delBtn = element.getElementsByClassName("delete-btn")[0];
+    let fireBtn = element.getElementsByClassName("fire-btn")[0];
+    let inField = element.getElementsByClassName("triggerName")[0];
+    addDeleteEvent(delBtn, element)
+    addFireEvent(fireBtn, element)
 }
+
+function addDeleteEvent(deleteBtn, el) {
+    deleteBtn.addEventListener('click', function(e) {
+        let tmp = e.target.parentElement.parentElement
+        triggerList.removeChild(tmp)
+    })
+}
+
+function addFireEvent(el, block) {
+    el.addEventListener('click', function(e) {
+        let value = e.target.parentElement.parentElement.getElementsByClassName("triggerName")[0].value;
+        io.emit(value, {"test":"RemoteControl", "message":value});
+        addEventTolist("RemoteControl", value);
+    })
+}
+
 
 
 // Express Server for direct http requests - we actually dont need that right?
@@ -153,7 +153,6 @@ function addEventTolist(e, m) {
 }
 
 // Write IP Address in Window
-var devBtn = document.createElement('div')
+var devBtn = document.getElementById('footer')
 var t = document.createTextNode("Ip Adress is: " + ipAddress + ":" + PORT)
 devBtn.appendChild(t)
-document.body.appendChild(devBtn)

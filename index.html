@@ -7,9 +7,22 @@
     <link rel="stylesheet" href="main.css">
   </head>
   <body>
+    <template id="eventTemplate">
+    <div class="mb-2 form-row align-items-left">
+      <div class="col col-sm-2">
+      <button type="button" class="delete-btn btn btn-secondary" role="button"> &times; </button>
+      </div>
+      <div class="col col-sm-8">
+      <input type="text" class="triggerName form-control" placeholder="Trigger Name">
+      </div>
+      <div class="col col-sm-2">
+      <button type="button" class="fire-btn btn btn-primary" role="button">Fire</button>
+      </div>
+    </div> 
+    </template>
     <!-- All of the Node.js APIs are available in this renderer process. -->
       <nav class="navbar navbar-dark bg-dark mb-4">
-          <a class="navbar-brand" href="#">Axure Socket</a>
+          <a class="navbar-brand" href="#">AxSocket</a>
       </nav>
       <div class="container-fluid">
         <div class="row">
@@ -22,9 +35,9 @@
             <form class="mb-4">
               <div class="form-row">
                 <div class="col col-md-5">
-                    <input type="password" class="form-control" id="triggerName" placeholder="Trigger Name">
+                    <input type="text" class="form-control" id="triggerName" placeholder="Trigger Name">
                 </div>
-                <button type="button" class="btn btn-primary col-md-3">Add Trigger</button>
+                <button type="button" class="btn btn-primary col-md-3" id="addTrigger">Add Trigger</button>
               </div>
             </form>
 
@@ -73,13 +86,17 @@
                 <span class="text-muted">Events</span>
                 <span class="badge badge-secondary badge-pill" id="message-counter">0</span>
               </h6>
+              <button type="button" id="clearListBtn" class="btn btn-secondary">Clear</button>
            <ul class="list-group" id="dkgEventList">
-             <li class="list-group-item">test2</li>
-             <li class="list-group-item">test2</li>
            </ul>
           </div>
         </div> <!-- row end-->
       </div>
+      <footer class="footer">
+        <div class="container">
+          <span class="text-muted" id="footer"></span>
+        </div>
+      </footer>
     <script>
       // You can also require other files to run in this process
       require('./renderer.js')
